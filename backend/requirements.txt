@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+python-multipart
+sentence-transformers
+faiss-cpu
+PyPDF2
+python-docx
+numpy
+python-jose[cryptography]
+passlib[bcrypt]
+aiofiles
