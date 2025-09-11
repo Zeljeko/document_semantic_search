@@ -43,8 +43,8 @@ class EmbeddingService:
             logger.error(f"Failed to generate embeddings: {str(e)}")
             raise Exception(f"Embedding generation failed: {str(e)}")
         
-    def generate_single_embedding(self, text: str) -> np.nadarray:
-        return self.generate_embeddings(text)[0]
+    def generate_single_embedding(self, text: str) -> np.ndarray:
+        return self.generate_embeddings([text])[0]
     
     def get_embedding_dimension(self) -> int:
         return self.embedding_dimension

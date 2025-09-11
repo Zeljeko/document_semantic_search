@@ -25,7 +25,7 @@ class TextChunker:
         Each separated paragraph is sanitized in list
         Returns separated paragraphs
         """
-        paragraphs = re.split(r'\n\s*\n', text.split())
+        paragraphs = re.split(r'\n\s*\n', text.strip())
         return [p.strip() for p in paragraphs if p.strip()]
     
     def create_chunks_with_overlap(self, paragraphs: List[str]) -> List[dict]:
@@ -44,7 +44,7 @@ class TextChunker:
 
             if token_count <= self.max_tokens:
                 # Add paragraph to current chunk
-                current_chunk =+ test_chunk
+                current_chunk = test_chunk
                 chunk_paragraphs.append(i)
             else:
                 # Current chunk is full, save it and start a new one

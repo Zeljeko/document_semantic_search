@@ -19,14 +19,16 @@ class DatabaseManager:
     def init_database(self):
         """Create tables if they don't exist"""
         # Create directory if needed
-        os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
+        dirpath = os.path.dirname(self.db_path)
+        if dirpath:
+            os.makedirs(dirpath, exist_ok=True)
 
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
 
             # Documents table
             cursor.execute('''
-                CREATE TABLES IF NOT EXISTS documents (
+                CREATE TABLE IF NOT EXISTS documents (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,      
                     filename TEXT NOT NULL,
                     original_filename TEXT NOT NULL,
@@ -44,13 +46,13 @@ class DatabaseManager:
                 CREATE TABLE IF NOT EXISTS document_chunks (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     document_id INTEGER NOT NULL,
-                    chunk_id INTEGER NOT NULL.
+                    chunk_id INTEGER NOT NULL,
                     chunk_text TEXT NOT NULL,
                     token_count INTEGER NOT NULL,
-                    char_count, INTEGER NOT NULL,
+                    char_count INTEGER NOT NULL,
                     vector_id INTEGER, -- References FAISS index position
                     paragraph_indices TEXT, -- JSON string of paragraph indices
-                    FOREIGN KEY (document_id) REFRENCES documents (id)
+                    FOREIGN KEY (document_id) REFERENCES documents (id)
                 )
             ''')
 
@@ -63,14 +65,14 @@ class DatabaseManager:
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute('''
-            INSERT INTO documents
-            (filename, original_filename, file_type, file_size, metadata)
-            VALUES (?,?,?,?,?)
-        ''', filename, original_filename, file_type, file_size, metadata)
+                INSERT INTO documents
+                (filename, original_filename, file_type, file_size, metadata)
+                VALUES (?,?,?,?,?)
+            ''', (filename, original_filename, file_type, file_size, metadata))
         
-        document_id = cursor.lastrowid
-        conn.commit()
-        return document_id
+            document_id = cursor.lastrowid
+            conn.commit()
+            return document_id
     
     def insert_document_chunks(self,document_id:int,chunks:List[Dict[Any,Any]]):
         """Insert documents chunks for a document"""
@@ -81,7 +83,7 @@ class DatabaseManager:
                 cursor.execute('''
                 INSERT INTO document_chunks
                 (document_id, chunk_id, chunk_text, token_count, char_count, paragraph_indices)
-                VALUES (?,?,?,?,?)
+                VALUES (?,?,?,?,?,?)
             ''',(
                 document_id,
                 chunk['chunk_id'],
@@ -91,7 +93,7 @@ class DatabaseManager:
                 str(chunk['paragraph_indices']) # store as string
             ))
         
-        conn.commit()
+            conn.commit()
     
     def update_document_status(self,document_id:int, status: str, num_chunks: int = None):
         """Update document processing status"""
@@ -116,6 +118,7 @@ class DatabaseManager:
     def get_all_documents(self) -> List[Dict[Any, Any]]:
         """Get all documents and their metadata"""
         with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row # Return dict-like objects
             cursor = conn.cursor()
 
             cursor.execute('''
@@ -125,15 +128,16 @@ class DatabaseManager:
 
             return [dict(row) for row in cursor.fetchall()]
     
-    def get_document_chunks(self,document_id: int):
+    def get_document_chunks(self,document_id: int) -> List[Dict[Any, Any]]:
         """Get all chunks for a specific document"""
         with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
 
             cursor.execute('''
                 SELECT * FROM document_chunks
-                WHERE id = ?
+                WHERE document_id = ?
                 ORDER BY chunk_id                
-            ''', (document_id))
+            ''', (document_id,))
 
             return [dict(row) for row in cursor.fetchall()]

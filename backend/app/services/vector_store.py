@@ -44,7 +44,7 @@ class FAISSVectorStore:
         if os.path.exists(self.index_path) and os.path.exists(self.metadata_path):
             self.load_index()
         else:
-            self._create_index
+            self._create_index()
 
     def normalize_vectors(self, vectors:np.ndarray) -> np.ndarray:
         """
@@ -58,13 +58,13 @@ class FAISSVectorStore:
         norms = np.where(norms == 0,1,norms)
         return vectors/norms
     
-    def add_vectors(self, vectors: np.ndarray, metadata: List[Dict[Any, Any]]):
+    def add_vectors(self, vectors:np.ndarray, metadata:List[Dict[Any, Any]]):
         """
         Add vectors and their metadata to the index
         """
         if self.index is None:
             self.load_or_create_index()
-        
+
         # Normalize vectors
         normalized_vectors = self.normalize_vectors(vectors)
 
@@ -100,7 +100,7 @@ class FAISSVectorStore:
         for score, idx in zip(scores[0], indices[0]):
             if idx != -1: # -1 means no more result
                 result = self.metadata[idx].copy()
-                result['similarity'] = float(score)
+                result['similarity_score'] = float(score)
                 results.append(result)
         
         return results

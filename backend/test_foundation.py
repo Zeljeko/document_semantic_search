@@ -24,7 +24,7 @@ def test_document_parser():
         text,metadata = DocumentParser.parse_document(test_file)
         assert len(text) > 0
         assert metadata['file_type'] == 'txt'
-        print("Document parser working correctly")
+        print("!!! Document parser working correctly !!!\n")
     finally:
         os.unlink(test_file)
 
@@ -49,9 +49,9 @@ def test_text_chunker():
     assert len(chunks) > 0
     assert all('text' in chunk for chunk in chunks)
     assert all('token_count' in chunk for chunk in chunks)
-    print(f"Text chunker created {len(chunks)} chunks")
+    print(f"!!! Text chunker created {len(chunks)} chunks !!!")
 
-    print(f"    First chunk: {chunks[0]['text'][:100]}...")
+    print(f"    First chunk: {chunks[0]['text'][:100]}...\n")
 
 def test_embedding_service():
     """Test embedding generation"""
@@ -67,7 +67,7 @@ def test_embedding_service():
 
     assert embeddings.shape[0] == 2 # Two sentences
     assert embeddings.shape[1] == 384 # Model dimension
-    print(f"Embedding service generated {embeddings.shape} embeddings")
+    print(f"!!! Embedding service generated {embeddings.shape} embeddings !!!\n")
 
 def test_vector_store():
     """Test FAISS vector store"""
@@ -103,13 +103,13 @@ def test_vector_store():
     vector_store.add_vectors(embeddings, metadata)
 
     # Test search
-    query = "What are pets like?"
+    query = "I need a companion"
     query_embedding = embedding_service.generate_single_embedding(query)
     results = vector_store.search(query_embedding, k=2)
 
     assert len(results) > 0
-    print(f"Vector store search returned {len(results)} results")
-    print(f"    Top results: {results[0]['text'][:50]}... (score: {results[0]['similarity_score']:.3f})")
+    print(f"!!! Vector store search returned {len(results)} results !!!")
+    print(f"    Top results: {results[0]['text'][:50]}... (score: {results[0]['similarity_score']:.3f})\n")
 
     # Cleanup
     shutil.rmtree("test_vectors", ignore_errors=True)
@@ -163,10 +163,12 @@ def test_database():
     assert len(chunks) == 2
     assert documents[0]['processing_status'] == 'completed'
 
-    print(f"Database operations working correctly")
-    print(f"    Created documents with {len(chunks)} chunks")
+    print(f"!!! Database operations working correctly !!!")
+    print(f"    Created documents with {len(chunks)} chunks\n")
 
     # Cleanup
+    import gc
+    gc.collect()
     os.unlink("test_db.sqlite")
 
 def run_all_tests():
@@ -182,14 +184,14 @@ def run_all_tests():
         test_vector_store()
         test_database()
 
-        print("\n" * 50)
+        print("=" * 50)
         print("ALL FOUNDATIONS TEST PASSED")
-        print("\n" * 50)
+        print("=" * 50)
     
     except Exception as e:
-        print("\n" * 50)
+        print("=" * 50)
         print(f"TEST FAILED: {str(e)}")
-        print("\n" * 50)
+        print("=" * 50)
         raise e
     
 if __name__ == "__main__":
