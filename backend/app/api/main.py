@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 import os
+import time
 from contextlib import asynccontextmanager
 
 
@@ -29,6 +30,29 @@ app.add_middleware(
 embedding_service = None
 vector_store = None
 database_manager = None
+document_processor = None
+start_time = time.time()
+
+# Dependency injection functions
+def get_embedding_service():
+    if embedding_service is None:
+        raise HTTPException(status_code=503, detail="Embedding service is not initialized")
+    return embedding_service
+
+def get_vector_store():
+    if vector_store is None:
+        raise HTTPException(status_code=503, detail="Vector store is not initialized")
+    return vector_store
+
+def get_database_manager():
+    if database_manager is None:
+        raise HTTPException(status_code=503, detail="Database manager is not initialized")
+    return database_manager
+
+def get_document_processor():
+    if document_processor is None:
+        raise HTTPException(status_code=503, detail="Document processor is not initialized")
+    return document_processor
 
 # Lifespan of application
 @asynccontextmanager
