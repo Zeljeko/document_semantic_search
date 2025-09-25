@@ -17,7 +17,7 @@ from app.models.api_models import (
 )
 
 from app.services.document_processor import DocumentProcessor
-from app.main import get_database_manager
+from app.dependencies import get_database_manager
 
 logger = logging.getLogger(__name__)
 
@@ -116,11 +116,11 @@ async def upload_document(
             original_filename = file.filename,
             file_type = file_type,
             file_size = file_size,
-            metadata = json.dump({"upload_timestamp": datetime.now().isoformat})
+            metadata = json.dumps({"upload_timestamp": datetime.now().isoformat()})
         )
 
         # Queue background processing
-        from app.main import get_document_processor
+        from app.dependencies import get_document_processor
         processor = get_document_processor()
         background_tasks.add_task(processor.process_document, document_id, filename)
 
@@ -192,7 +192,7 @@ async def get_document(document_id:int, db_manager=Depends(get_database_manager)
 
         if not document_data:
             raise HTTPException(
-                status_code=400,
+                status_code=404,
                 detail=f"Document with ID {document_id} not found"
             )
         

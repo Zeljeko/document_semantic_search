@@ -7,6 +7,8 @@ import time
 from datetime import datetime
 from contextlib import asynccontextmanager
 
+from app.dependencies import set_services
+
 # Import error handlers
 from app.utils.error_handlers import (
     validation_exception_handler,
@@ -21,74 +23,18 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Initialize FastAPI app
-app = FastAPI(
-    title = "Document Semantic Search Engine",
-    description= """
-    A semantic search engine for documents using vector embeddings
-
-    ## Features
-    * Upload PDF, DOCX, TXT documents
-    * Automatic text chunking and embedding generation
-    * FAISS powered similarity search
-    * RESTful API with comprehensive error handling
-
-    ## Workflow
-    1. **Upload** documents via '/api/documents/upload
-    2. **Wait** for processing to complete (check status via 'api/documnets/')
-    3. **Search** using '/api/search/' with natural language queries
-    """,
-    version = "1.0.0",
-    docs_url="/docs",
-    redoc_url="/redoc",  
-)
-
-app.add_exception_handler(RequestValidationError, validation_exception_handler)
-app.add_exception_handler(HTTPException, http_exception_handler)
-app.add_exception_handler(Exception, general_exception_handler)
-
-# Configure CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=['http://localhost:3000', 'http://127.0.0.1:3000'], # React dev server
-    allow_credentials = True,
-    allow_methods=["*"],
-    allow_headers=["*"]
-)
-
-# Global services (will be initialized on startup)
+# Global services
 embedding_service = None
 vector_store = None
 database_manager = None
 document_processor = None
 start_time = time.time()
 
-# Dependency injection functions
-def get_embedding_service():
-    if embedding_service is None:
-        raise HTTPException(status_code=503, detail="Embedding service is not initialized")
-    return embedding_service
-
-def get_vector_store():
-    if vector_store is None:
-        raise HTTPException(status_code=503, detail="Vector store is not initialized")
-    return vector_store
-
-def get_database_manager():
-    if database_manager is None:
-        raise HTTPException(status_code=503, detail="Database manager is not initialized")
-    return database_manager
-
-def get_document_processor():
-    if document_processor is None:
-        raise HTTPException(status_code=503, detail="Document processor is not initialized")
-    return document_processor
-
 # Lifespan of application
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    global embedding_service, vector_store, database_manager
+    global embedding_service, vector_store, database_manager, document_processor
 
     logger.info("Initializing Document Semantic Search Engine...")
     
@@ -110,7 +56,7 @@ async def lifespan(app: FastAPI):
         
         logger.info("Initializing vector store...")
         vector_store = FAISSVectorStore(
-            dimension=embedding_service.get_embedding_dimension
+            dimension=embedding_service.get_embedding_dimension()
         )
 
         vector_store.load_or_create_index()
@@ -128,6 +74,9 @@ async def lifespan(app: FastAPI):
         )
         logger.info("Document processor ready.")
 
+        # Set services in dependencies module
+        set_services(embedding_service, vector_store, database_manager, document_processor)
+
         # Log system stats
         from app.utils.performance import PerformanceOptimizer
 
@@ -141,6 +90,42 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Failed to load services: {str(e)}")
         raise e
+
+# Initialize FastAPI app
+app = FastAPI(
+    title = "Document Semantic Search Engine",
+    description= """
+    A semantic search engine for documents using vector embeddings
+
+    ## Features
+    * Upload PDF, DOCX, TXT documents
+    * Automatic text chunking and embedding generation
+    * FAISS powered similarity search
+    * RESTful API with comprehensive error handling
+
+    ## Workflow
+    1. **Upload** documents via '/api/documents/upload
+    2. **Wait** for processing to complete (check status via 'api/documnets/')
+    3. **Search** using '/api/search/' with natural language queries
+    """,
+    version = "1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    lifespan=lifespan
+)
+
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(HTTPException, http_exception_handler)
+app.add_exception_handler(Exception, general_exception_handler)
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['http://localhost:3000', 'http://127.0.0.1:3000'], # React dev server
+    allow_credentials = True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
     
 @app.get("/")
 async def root():

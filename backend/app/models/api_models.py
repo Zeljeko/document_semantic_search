@@ -84,7 +84,7 @@ class DocumentUploadResponse(BaseModel):
     document_id: int
     filename: str
     original_filename: str
-    file_size: str
+    file_size: int
     processing_status: ProcessingStatus
     message: str
 

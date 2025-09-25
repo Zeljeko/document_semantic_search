@@ -4,7 +4,7 @@ import logging
 from typing import List
 
 from app.models.api_models import SearchRequest, SearchResponse, DocumentChunkResponse
-from app.main import get_embedding_service, get_vector_store, get_database_manager
+from app.dependencies import get_embedding_service, get_vector_store, get_database_manager
 
 logger = logging.getLogger(__name__)
 
@@ -60,9 +60,9 @@ async def semantic_search(
 
             if doc_data:
                 enriched_results.append(DocumentChunkResponse(
-                    chunk_id = result['id'],
+                    chunk_id = result['chunk_id'],
                     text = result['text'],
-                    token_count = result['text'],
+                    token_count = result['token_count'],
                     char_count = result['char_count'],
                     similarity_score = result['similarity_score'],
                     document_id = document_id,

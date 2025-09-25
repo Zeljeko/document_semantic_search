@@ -121,7 +121,7 @@ class FAISSVectorStore:
             pickle.dump({
                 'meta_data': self.metadata,
                 'next_id': self.next_id
-            })
+            }, f)
         
         logger.info(f"Index saved to {self.index_path}")
 

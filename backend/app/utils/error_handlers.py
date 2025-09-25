@@ -15,7 +15,7 @@ class DocumentProcessingError(Exception):
         super().__init__(self.message)
 
 class VectorStoreError(Exception):
-    """Custom exception for document processing errors"""
+    """Custom exception for vector store errors"""
     def __init__(self, message: str, document_id: int = None):
         self.message = message
         self.document_id = document_id

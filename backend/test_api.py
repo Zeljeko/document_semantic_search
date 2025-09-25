@@ -9,7 +9,7 @@ TEST_DOCUMENT_PATH = "test_document.txt"
 
 class APITester:
     def __init__(self, base_url: str = BASE_URL):
-        self.base_url = base_url,
+        self.base_url = base_url
         self.session = requests.Session()
         self.uploaded_document_id = None
 
@@ -49,7 +49,7 @@ This test document demonstrates various concepts related to document processing 
         assert data["status"] in ["healthy","degraded"]
         assert "services" in data
 
-        print(f"Health check passed: {data['status']}")
+        print(f"Health check status: {data['status']}")
         return data
     
     def test_document_upload(self):
@@ -59,6 +59,8 @@ This test document demonstrates various concepts related to document processing 
             files = {'file': (TEST_DOCUMENT_PATH, f, 'text/plain')}
             response = self.session.post(f"{self.base_url}/api/documents/upload", files=files)
 
+
+        print(f"{self.base_url}/api/documents/upload")
         assert response.status_code == 200
 
         data = response.json()
@@ -136,8 +138,9 @@ This test document demonstrates various concepts related to document processing 
 
             response = self.session.post(
                 f"{self.base_url}/api/search",
-                json == search_request
+                json = search_request
             )
+
             assert response.status_code==200
 
             data = response.json()
@@ -159,7 +162,7 @@ This test document demonstrates various concepts related to document processing 
         print("Testing search statistics")
 
         response = self.session.get(f"{self.base_url}/api/search/stats")
-        assert self.response.status_code == 200
+        assert response.status_code == 200
 
         data = response.json()
         assert "total_documents" in data
