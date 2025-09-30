@@ -90,7 +90,7 @@ This project serves as a hands-on exploration of key AI engineering competencies
 - **Docker & Docker Compose**: Containerization
 - **Nginx**: Reverse proxy and load balancing
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -196,14 +196,14 @@ curl -X POST http://localhost:8000/api/search/ \
 curl http://localhost:8000/api/documents/
 ```
 
-## 📊 Current Performance
+## Current Performance
 
 - **Search Latency**: < 100ms for datasets under 1,000 chunks
 - **Upload Processing**: 2-5 seconds per document (varies by size and format)
 - **Supported Scale**: Tested with 100+ documents and 1,000+ chunks
 - **Memory Usage**: ~1.5GB for 100 documents with embeddings loaded
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Run foundation tests
@@ -245,7 +245,7 @@ Once the server is running, visit:
 - `GET /health` - System health check with service status
 - `GET /` - API root with system information
 
-## 🔧 Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -269,7 +269,7 @@ VECTOR_STORE_PATH=data/vectors/faiss_index
 DATABASE_PATH=data/documents.db
 ```
 
-## 🎓 Key Technical Decisions & Learnings
+## Key Technical Decisions & Learnings
 
 ### Why Sentence-Transformers?
 
@@ -306,7 +306,7 @@ DATABASE_PATH=data/documents.db
 - **Vector compression**: Using exact search (IndexFlatIP), not optimized for very large datasets
 - **No frontend**: Command-line/API testing only until React interface is complete
 
-## 🔜 Next Steps
+## Next Steps
 
 ### Immediate
 
@@ -348,7 +348,7 @@ document-semantic-search/
 └── README.md
 ```
 
-## 🤝 Learning Resources Used
+## Learning Resources Used
 
 - [Sentence Transformers Documentation](https://www.sbert.net/)
 - [FAISS Wiki](https://github.com/facebookresearch/faiss/wiki)
