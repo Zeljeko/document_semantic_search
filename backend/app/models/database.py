@@ -145,14 +145,20 @@ class DatabaseManager:
     def delete_document(self, document_id: int):
         """Delete document and its chunks from the database"""
         with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor
+            cursor = conn.cursor()
 
             try:
-                cursor.execute('DELETE FROM documents_chunks WHERE document_id = ?', (document_id,))
+                cursor.execute('''
+                    DELETE FROM document_chunks 
+                    WHERE document_id = ?
+                ''', (document_id,))
                 deleted_chunks = cursor.rowcount
 
                 # Delete document
-                cursor.execute('DELETE FROM documents WHERE id = ?', (document_id,))
+                cursor.execute('''
+                    DELETE FROM documents 
+                    WHERE id = ?
+                ''', (document_id,))
                 deleted_docs = cursor.rowcount
 
                 conn.commit()

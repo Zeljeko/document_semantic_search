@@ -258,7 +258,7 @@ async def delete_document(document_id: int, db_manager = Depends(get_database_ma
             )
 
         return {
-            "message": f"Document '{document_data['original_filaname']}' deleted successfully",
+            "message": f"Document '{document_data['original_filename']}' deleted successfully",
             "document_id": document_id
             }
     
