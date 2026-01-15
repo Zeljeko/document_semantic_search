@@ -119,7 +119,7 @@ class FAISSVectorStore:
         # Save metadata
         with open(self.metadata_path, 'wb') as f:
             pickle.dump({
-                'meta_data': self.metadata,
+                'metadata': self.metadata,
                 'next_id': self.next_id
             }, f)
         
@@ -142,4 +142,3 @@ class FAISSVectorStore:
     
     def get_total_vectors(self) -> int:
         return self.index.ntotal if self.index else 0
-

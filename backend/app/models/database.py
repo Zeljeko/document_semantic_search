@@ -141,3 +141,23 @@ class DatabaseManager:
             ''', (document_id,))
 
             return [dict(row) for row in cursor.fetchall()]
+        
+    def delete_document(self, document_id: int):
+        """Delete document and its chunks from the database"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor
+
+            try:
+                cursor.execute('DELETE FROM documents_chunks WHERE document_id = ?', (document_id,))
+                deleted_chunks = cursor.rowcount
+
+                # Delete document
+                cursor.execute('DELETE FROM documents WHERE id = ?', (document_id,))
+                deleted_docs = cursor.rowcount
+
+                conn.commit()
+                return deleted_docs > 0
+            
+            except Exception as e:
+                conn.rollback()
+                raise

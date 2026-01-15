@@ -5,6 +5,7 @@ A FastAPI-based backend that enables natural language search across PDF, DOCX, a
 Note: This project was built as a deep dive into vector math and backend architecture. Frontend development has been discontinued; this repository serves as a functional REST API.
 
 ### **Core Implementation**
+<<<<<<< HEAD
 I chose to avoid high-level wrappers like LangChain to better understand the underlying "plumbing" of AI applications.
 - **Vector Engine**: FAISS (Facebook AI Similarity Search) for efficient similarity lookups.
 - **Embeddings**: all-MiniLM-L6-v2 via Sentence-Transformers (384-dimensional vectors).
@@ -27,6 +28,32 @@ I chose to avoid high-level wrappers like LangChain to better understand the und
 | NLP | Sentence-Transfomers (PyTorch) |
 | Parsing | PyPDF2, python-docx |
 
+=======
+
+I chose to avoid high-level wrappers like LangChain to better understand the underlying "plumbing" of AI applications.
+
+- **Vector Engine**: FAISS (Facebook AI Similarity Search) for efficient similarity lookups.
+- **Embeddings**: all-MiniLM-L6-v2 via Sentence-Transformers (384-dimensional vectors).
+- **Database**: SQLite handles document metadata, while FAISS manages the vector index.
+- **SProcessing**: Document is split into 400 token chunks with 50 token overlaps to maintain context across segments.
+
+### **Tech Stack**
+
+- **Language**: Designing end-to-end workflows from raw documents to searchable content
+- **Framework**: Intelligent segmentation with context preservation through overlapping windows
+- **Vector Store**: Hands-on experience with FAISS for production-scale similarity search
+- **NLP**: Handling long-running AI operations without blocking user interactions
+- **Parsing**: PyPDF2, python-docx
+
+| Component    | Technology                          |
+| ------------ | ----------------------------------- |
+| Language     | Python 3.13.5                       |
+| Framework    | FastAPI (Pydantic 2 for validation) |
+| Vector Store | FAISS                               |
+| NLP          | Sentence-Transfomers (PyTorch)      |
+| Parsing      | PyPDF2, python-docx                 |
+
+>>>>>>> bbfe4f4 (fix: vector store not loading fix due to misnaming of key)
 ### **How it works**
 
 ```
@@ -55,6 +82,10 @@ I chose to avoid high-level wrappers like LangChain to better understand the und
 │  └──────────────────────────────────────────────────┘       │
 └─────────────────────────────────────────────────────────────┘
 ```
+<<<<<<< HEAD
+=======
+
+>>>>>>> bbfe4f4 (fix: vector store not loading fix due to misnaming of key)
 1. **Document Upload** → User uploads PDF, DOCX, or TXT file
 2. **Validation** → File type, size, and format verification
 3. **Text Extraction** → Format-specific parsing to clean text
@@ -64,6 +95,10 @@ I chose to avoid high-level wrappers like LangChain to better understand the und
 7. **Metadata Storage** → Track documents and chunks in SQLite
 
 ### Quick Start
+<<<<<<< HEAD
+=======
+
+>>>>>>> bbfe4f4 (fix: vector store not loading fix due to misnaming of key)
 ## Installation
 
 ```bash
@@ -128,7 +163,12 @@ python test_api.py
 
 ## Known Limitations
 
+<<<<<<< HEAD
 - **Single-user**: Currently no authentication
 - **Local storage**: Data stored locally, no cloud integration
+=======
+- **Single-user**: Currently no authentication or multi-tenancy support
+- **Local storage**: Data stored locally, no cloud integration yet
+>>>>>>> bbfe4f4 (fix: vector store not loading fix due to misnaming of key)
 - **Processing queue**: Sequential document processing (no parallel workers)
 - **Vector compression**: Using exact search (IndexFlatIP), not optimized for very large datasets

@@ -227,7 +227,12 @@ async def get_document(document_id:int, db_manager=Depends(get_database_manager)
     
 @router.delete("/{document_id}")
 async def delete_document(document_id: int, db_manager = Depends(get_database_manager)):
-    """Delete a document and associated data"""
+    """
+    Delete a document and associated data
+    
+    Note: This deletes files and database record.
+    Vector store cleanup would require rebuiding the index.
+    """
     try:
         documents = db_manager.get_all_documents()
         document_data = next((doc for doc in documents if doc['id'] == document_id), None)
@@ -243,10 +248,19 @@ async def delete_document(document_id: int, db_manager = Depends(get_database_ma
         if os.path.exists(file_path):
             os.unlink(file_path)
 
-        # Remove from database (simplified - would need proper SQL statements)
-        logger.warning("Document deletion from database not fully implemented - would need DELETE statements")
+        # Delete from database
+        success = db_manager.delete_document(document_id)
 
-        return {"message": f"Document {document_id} deleted successfully"}
+        if not success:
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to delete document from database."
+            )
+
+        return {
+            "message": f"Document '{document_data['original_filaname']}' deleted successfully",
+            "document_id": document_id
+            }
     
     except HTTPException:
         raise
